@@ -1,6 +1,21 @@
 //A: LLT
 //Description: Header of the data part of the game
 #pragma once
+
+#include <stdlib.h>
+#include "display.hpp"
+#include "blockdata.hpp"
+#include <time.h>
+
+#define GAMEKERNEL_MAX_HEIGHT 100
+#define GAMEKERNEL_MAX_WIDTH 100
+
+void testPrint();
+void startGame(int _height, int _width);
+bool initGame(int _height, int _width);
+void initKernel();
+
+/* content of cpp, rewrite with c
 class GameKernel {
     public:
         GameKernel();
@@ -19,4 +34,4 @@ class GameKernel {
         int currentBlockForward;
         void initData();
         
-};
+};*/

@@ -8,7 +8,9 @@
 
 #define DISP_MIN_LINE 22
 #define DISP_MIN_WIDTH 25
-#define BLACK_CHAR '■'
+#define BLACK_CHAR "■"
+#define EMPTY_CHAR "  " //design for windows ssh console
+#define MOVETO(x,y) printf("\033[%d;%dH", (x), (y))
 
 winsize getWindowSize();
 int getWindowWidth();
@@ -22,4 +24,5 @@ struct OptionsList
 int askOptions(OptionsList* options);
 bool checkWindow(bool debug = false);
 char scanKey();
-void initGameInterface(int height, int width);
+bool initAndCheckInterface(int height, int width);
+void printRawMap(char **map, int height, int width);

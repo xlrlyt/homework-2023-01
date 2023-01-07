@@ -7,6 +7,7 @@
 #include "userstore.hpp"
 #include <string>
 int main(){
+    //testPrint(); return 0;
     //input basic data
     printf("%s", "请输入你的用户id: ");
     char* userid = new char[33];
@@ -34,6 +35,7 @@ int main(){
         printf("The terminal size is too small, required: %d x %d\n", DISP_MIN_LINE, DISP_MIN_WIDTH);
         return -1;
     }
+    initKernel();
     initSettingStore(configFileName.c_str());
     saveConfig(configFileName.c_str());
     //start menu part
@@ -48,6 +50,9 @@ int main(){
     
     if (userOp == 1){
         //start game
+        //printf("%s", "DEBUG: ???????????");
+        //return 0;
+        startGame(getHeight(), getWidth());
     }else if (userOp == 2)
     {
         //modify settings

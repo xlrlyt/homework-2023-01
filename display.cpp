@@ -71,6 +71,34 @@ char scanKey(){
     return input;
 }
 
-void initGameInterface(int height, int width){
-    
+bool initAndCheckInterface(int height, int width){
+    winsize ws = getWindowSize();
+    if (ws.ws_row < height + 2 || ws.ws_col < width + 2) return false;
+    printf("\033c");
+    return true;
+}
+void printRawMap(char **map, int height, int width){
+    //move to 0, 0
+    MOVETO(0, 0);
+    //print the first line
+    int c = 0, cc;
+    for (c = 0; c < width + 2; c++){
+        printf(BLACK_CHAR);
+    }
+    putchar('\n');
+    //print middle
+    for (c = 0; c < height; c++){
+        printf(BLACK_CHAR);
+        for(cc = 0; cc < width; cc++){
+            //putchar(map[c][cc] ? BLACK_CHAR : EMPTY_CHAR);
+            map[c][cc] ? printf(BLACK_CHAR) : printf("  ");
+        }
+        printf(BLACK_CHAR);
+        putchar('\n');
+    }
+    //print lastline
+    for (c = 0; c < width + 2; c++){
+        printf(BLACK_CHAR);
+    }
+    putchar('\n');
 }
