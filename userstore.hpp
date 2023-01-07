@@ -8,6 +8,17 @@ struct UsersList {
     int userCount;
     const char **userIdList;
 };
+struct UserRecord {
+    int startTime;
+    int costTime;
+    int score;
+};
+struct RecordList
+{
+    int recordCount;
+    UserRecord *recordList;
+};
+
 
 struct UserConfig {
     char userid[33];
@@ -32,3 +43,5 @@ void setUserName(const char* name);
 void setUserPhone(const char* phone);
 void setUserScoreInternal(int score);
 void setUserTimeInternal(int time);
+void addRecord(UserRecord userRecord);
+RecordList* getUserRecords();

@@ -6,6 +6,9 @@ int currentBlockType;
 int currentBlockHeight;
 int currentBlockWidth;
 int currentBlockRotation;
+int currentScore;
+float speed;
+int startTime;
 
 pthread_t threadForBlock;
 bool stopped = true;
@@ -33,6 +36,9 @@ bool initGame(int _height, int _width){
     width = _width;
     height = _height;
     srand((int)time(0));
+    currentScore = 0;
+    startTime = time(0);
+    speed = getSpeed();
     return true;
 }
 void generateBlock(){
@@ -53,7 +59,7 @@ void testPrint(){
 void* backgroundThread(void* arg){
     while (!stopped){
         execute(1);
-        usleep(1 * 1000 * 1000);
+        usleep(1 * 1000 * 1000 / speed);
     }
     refresh();
     printf("%s", "\n游戏结束，任意按键结束\n");
@@ -183,8 +189,8 @@ void execute(int operation){
     }
 }
 
-void startGame(int _height, int _width){
-    bool status = initGame(_height, _width);
+void startGame(){
+    bool status = initGame(getHeight(), getWidth());
     if (!status){
         printf("%s", "初始化游戏失败\n");
         sleep(2);
@@ -206,7 +212,7 @@ void startGame(int _height, int _width){
         if (cxx == 'q' || cxx == 'Q'){
             stopped = true;
         }
-        if (cxx == 'W' || cxx == 'w'){
+        if (cxx == 'w' || cxx == 'W'){
             //ignore
         }
         if (cxx == 'a' || cxx == 'A'){
@@ -224,9 +230,65 @@ void startGame(int _height, int _width){
         
     }
     pthread_join(threadForBlock, NULL);
-    printf("游戏得分：%d, 3秒后退出\n", 0);
+    int costTime = time(0) - startTime;
+
+    printf("游戏得分：%d, 耗时：%d, 3秒后退出\n", currentScore, (int)costTime);
+    //update score
+    int totalScore = getUserScore() + currentScore;
+    setUserScoreInternal(totalScore);
+    int totalTime = getUserTime() + costTime;
+    setUserTimeInternal(totalTime);
+    //update record
+    UserRecord userRecord;
+    userRecord.startTime = startTime;
+    userRecord.costTime = costTime;
+    userRecord.score = currentScore;
+    addRecord(userRecord);
+
     sleep(3);
 }
+
+void merge(){
+    int c, cc, tc;
+    bool result;
+    char* tmp;
+    c = 0;
+    while (c < height)
+    {
+        cc = 0;
+        result = true;
+        while (cc < width){
+            if (baseMap[c][cc] == 0){
+                result = false;
+                break;
+            }
+            cc++;
+        }
+        if (result){
+            //need merge
+            currentScore++;
+            tc = c;
+            tmp = baseMap[tc];
+            while (tc > 0){
+                baseMap[tc] = baseMap[tc - 1];
+                tc--;
+            }
+            baseMap[0] = tmp;
+            cc = 0;
+            while (cc < width){
+                tmp[cc] = 0;
+                cc++;
+            }
+        }
+        c++;
+    }
+    
+}
+
 void refresh(){
+    merge();
     printMixedMap(baseMap, height, width, currentBlockType, currentBlockHeight, currentBlockWidth, currentBlockRotation);
+    printf("当前得分: %d, 耗时: %d\n", currentScore, (int)(time(0) - startTime));
+    //printf("                       ");
+
 }

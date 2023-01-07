@@ -30,7 +30,7 @@ bool checkWindow(bool debug){
     return true;
 }
 int askOptions(OptionsList* options){
-
+    usleep(50*1000);
     printf("\033c");
     //build text
     restart:
@@ -68,6 +68,8 @@ char scanKey(){
     input = getchar();
       
     tcsetattr(0,TCSANOW,&stored_settings);
+    printf("\033[1D          \033[10D");
+
     return input;
 }
 
@@ -105,6 +107,7 @@ void printRawMap(char **map, int height, int width){
 
 void printMixedMap(char **map, int height, int width, int currentBlockType, int currentBlockHeight, int currentBlockWidth, int currentBlockRotation){
     MOVETO(0, 0);
+    printf("%s\n", "WASD控制方向, R旋转, Q退出");
     //print the first line
     int c = 0, cc;
     for (c = 0; c < width + 2; c++){

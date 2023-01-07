@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <termio.h>
+//#include <conio.h>
 #include "blockdata.hpp"
 
 #define DISP_MIN_LINE 22
@@ -12,7 +13,7 @@
 #define BLACK_CHAR "■"
 #define EMPTY_CHAR "  " //design for windows ssh console
 #define MOVETO(x,y) printf("\033[%d;%dH", (x), (y))
-
+#define CLEAR_SCREEN() printf("\033c")
 winsize getWindowSize();
 int getWindowWidth();
 int getWindowHeight();

@@ -52,7 +52,7 @@ int main(){
         //start game
         //printf("%s", "DEBUG: ???????????");
         //return 0;
-        startGame(getHeight(), getWidth());
+        startGame();
     }else if (userOp == 2)
     {
         //modify settings
@@ -159,6 +159,50 @@ int main(){
         delete []useridText; delete []usernameText; delete []userphoneText; delete []scoreText; delete []timeText;
     }else if (userOp == 4){
         //query user history
+        
+        int curPage = 0;
+        int c4;
+        RecordList* recordList = getUserRecords();
+        const int recordPrePage = 10;
+        char userOP4;
+        OP4_REFRESH:
+        //usleep(50*1000);
+        CLEAR_SCREEN();
+        MOVETO(0,0);
+        usleep(500*1000);
+        printf("历史记录查询：共计%d条，当前第%d页，每页%d条\n", recordList->recordCount, curPage + 1, recordPrePage);
+        c4 = 0;
+        char times[40];
+        time_t tmt;
+        while (c4 < recordPrePage && c4 + curPage * recordPrePage < recordList->recordCount){
+            tmt = (time_t)recordList->recordList[c4].startTime;
+            struct tm* TMTM = localtime(&tmt);
+            strftime(times, 80, "%Y-%m-%d %H:%M:%S  %Z", TMTM);
+
+            printf("%d. 开始时间：%s, 耗时：%d秒, 得分：%d\n", c4 + 1, 
+            times
+            , recordList->recordList[c4].costTime, recordList->recordList[c4].score);
+            c4++;
+        }
+        printf("输入1或2进行翻页，3退出\n");
+        
+        userOP4 = scanKey();
+        if (userOP4 == '1'){
+            if (curPage > 0){
+                curPage--;
+            }
+        }else if (userOP4 == '2')
+        {
+            if (curPage < recordList->recordCount / recordPrePage){
+                curPage++;
+            }
+        }else if (userOP4 == '3'){
+            goto OP4_END;
+        }
+        goto OP4_REFRESH;
+
+        OP4_END:
+        1 == 1;
     }else if (userOp == 5){
         return 0;
     }

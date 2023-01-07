@@ -3,7 +3,7 @@
 
 UserConfig userConfig;
 char configFileName[100];
-
+char recordFileName[100];
 
 char* xtrim(char *str) {
 	int first = -1;
@@ -119,8 +119,11 @@ playtime: int
 
 */
 void initUserConfig(const char* userId){
-    strcpy(configFileName, hash32bitL(userId));
+    char* userIdHash = hash32bitL(userId);
+    strcpy(configFileName, userIdHash);
     strcpy(configFileName + strlen(configFileName), "_userdata.conf");
+    strcpy(recordFileName, userIdHash);
+    strcpy(recordFileName + strlen(recordFileName), "_record.conf");
     FILE* fp = fopen(configFileName, "r");
     if (fp == NULL){
         strcpy(userConfig.userid, userId);
@@ -184,4 +187,40 @@ void setUserScoreInternal(int score){
 void setUserTimeInternal(int time){
     userConfig.playTimeInSecond = time;
     saveUserConfig();
+}
+
+/*
+startTime
+costTime
+score
+*/
+void addRecord(UserRecord userRecord){
+    FILE* fp = fopen(recordFileName, "a");
+    if (fp == NULL){
+        printf("添加记录失败\n");
+        return;
+    }
+    fprintf(fp, "%d %d %d\n", userRecord.startTime, userRecord.costTime, userRecord.score);
+    fclose(fp);
+}
+RecordList* getUserRecords(){
+    FILE* fp = fopen(recordFileName, "r");
+    if (fp == NULL){
+        printf("获取记录失败\n");
+        return NULL;
+    }
+    int startTime, costTime, score;
+    RecordList* recordList = (RecordList*)malloc(sizeof(RecordList));
+    recordList->recordCount = 0;
+    recordList->recordList = (UserRecord*)malloc(sizeof(UserRecord) * 1);
+    while (fscanf(fp, "%d %d %d", &startTime, &costTime, &score) == 3){
+        
+        recordList->recordList[recordList->recordCount].startTime = startTime;
+        recordList->recordList[recordList->recordCount].costTime = costTime;
+        recordList->recordList[recordList->recordCount].score = score;
+        recordList->recordCount++;
+        recordList->recordList = (UserRecord*)realloc(recordList->recordList, sizeof(UserRecord) * (recordList->recordCount + 1));
+    }
+    fclose(fp);
+    return recordList;
 }
