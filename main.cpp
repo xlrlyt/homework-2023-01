@@ -22,8 +22,9 @@ int main(){
     }
     
     char* useridHash = hash32bitL(userid);
+    addToUserList(useridHash);
     //printf("DEBUG: Userid Hash: %s\n", useridHash); return 0;
-    
+    //return 0;
     
     std::string configFileName = "";
     configFileName += useridHash;

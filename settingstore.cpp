@@ -24,7 +24,7 @@ void initSettingStore(const char* configFileName){
     }
 }
 void saveConfig(const char* configFileName){
-    FILE* fp = fopen(configFileName, "w");
+    FILE* fp = fopen(configFileName, "w+");
     char buff[255];
     sprintf(buff, "%f %d %d", _iSettingStore.gameSpeed, _iSettingStore.gameHeight, _iSettingStore.gameWidth);
     fputs(buff, fp);
