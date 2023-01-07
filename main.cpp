@@ -7,6 +7,7 @@
 #include "userstore.hpp"
 #include <string>
 int main(){
+    //input basic data
     printf("%s", "请输入你的用户id: ");
     char* userid = new char[33];
     memset(userid, 0, 33);
@@ -20,12 +21,11 @@ int main(){
         userid[ci] = cc;
         ci++;
     }
-    
+    //init userdata and usersettings
     char* useridHash = hash32bitL(userid);
     addToUserList(useridHash);
-    //printf("DEBUG: Userid Hash: %s\n", useridHash); return 0;
-    //return 0;
-    
+    initUserConfig(userid);
+    saveUserConfig();
     std::string configFileName = "";
     configFileName += useridHash;
     configFileName += "_settings.conf";
@@ -36,6 +36,7 @@ int main(){
     }
     initSettingStore(configFileName.c_str());
     saveConfig(configFileName.c_str());
+    //start menu part
     struct OptionsList options;
     options.optionsText = new const char*[5]{
         "开始游戏", "修改游戏设置", "修改你的信息", "查询历史信息", "退出"
@@ -96,6 +97,61 @@ int main(){
 
     }else if (userOp == 3){
         //modify user settings
+        struct OptionsList modifyList;
+        char* useridText = new char[60];
+        char* usernameText = new char[60];
+        char* userphoneText = new char[60];
+        char* scoreText = new char[60];
+        char* timeText = new char[60];
+        
+        modifyList.optionsText = new const char*[6]{
+            useridText, usernameText, userphoneText, scoreText, timeText, "退出修改"
+        };
+        modifyList.title = "用户信息修改与查询界面";
+        modifyList.optionsCount = 6;
+        OP3_SEL:
+        sprintf(useridText, "用户id（不可修改）：%s", getUserId());
+        sprintf(usernameText, "用户名：%s", getUserName());
+        sprintf(userphoneText, "手机号：%s", getUserPhone());
+        sprintf(scoreText, "综合得分（不可修改）：%d", getUserScore());
+        sprintf(timeText, "游戏时长秒数（不可修改）：%d", getUserTime());
+        int userOP3 = askOptions(&modifyList);
+        if (userOP3 == 2){
+            //modify username
+            printf("%s", "请输入新的用户名：");//32
+            char input[33];
+            ci = 0;
+            while (ci < 32){
+                cc = getchar();
+                if (cc == '\n'){
+                    break;
+                }
+                input[ci] = cc;
+                ci++;
+            }
+            input[ci] = 0;
+            setUserName(input);
+        }else if (userOP3 == 3){
+            //modify phone
+            printf("%s", "请输入新的手机号：");
+            char input[20];
+            ci = 0;
+            while (ci < 19){
+                cc = getchar();
+                if (cc == '\n'){
+                    break;
+                }
+                input[ci] = cc;
+                ci++;
+            }
+            input[ci] = 0;
+            setUserPhone(input);
+        }else if (userOP3 == 6){
+            goto OP3_SEL_END;
+        }
+        goto OP3_SEL;
+        OP3_SEL_END:
+        delete []useridText; delete []usernameText; delete []userphoneText; delete []scoreText; delete []timeText;
     }else if (userOp == 4){
         //query user history
     }else if (userOp == 5){

@@ -1,9 +1,13 @@
 #include "userstore.hpp"
 
+
+UserConfig userConfig;
+char configFileName[100];
+
+
 char* xtrim(char *str) {
-	int first = -1; //第一个空白字符的下标
-	int last = -1; //最后一个空白字符的下标
-	//找到第一个非空白字符
+	int first = -1;
+	int last = -1;
 	for (int i = 0; str[i] != '\0'; i++) {
 		if (str[i] != ' '
 			&& str[i] != '\t'
@@ -13,12 +17,10 @@ char* xtrim(char *str) {
 			break;
 		}
 	}
-	if (first == -1) { //全是空白字符
+	if (first == -1) {
 		str[0] = '\0';
 		return str;
 	}
- 
-	//保存最后一个非空白字符的指针
 	for (int i = first; str[i] != '\0'; i++) {
 		if (str[i] != ' '
 			&& str[i] != '\t'
@@ -27,8 +29,6 @@ char* xtrim(char *str) {
 			last = i;
 		}
 	}
- 
-	//在最后一个非空白字符的后面赋值'\0'
 	str[last + 1] = '\0';
 	return str + first;
 }
@@ -75,6 +75,7 @@ UsersList getUserList(const char* listFileName){
             }
         }
         fclose(fp);
+        return userlist;
     }
 }
 
@@ -106,4 +107,81 @@ void addToUserList(const char* userIdHash, const char* listFileName){
         fprintf(fp, "%s\n", userIdHash);
         fclose(fp);
     }
+}
+
+
+/*
+userid: char*
+username: char*
+userphone: char*
+score: int
+playtime: int
+
+*/
+void initUserConfig(const char* userId){
+    strcpy(configFileName, hash32bitL(userId));
+    strcpy(configFileName + strlen(configFileName), "_userdata.conf");
+    FILE* fp = fopen(configFileName, "r");
+    if (fp == NULL){
+        strcpy(userConfig.userid, userId);
+        memset(userConfig.userPhone, 0, 20);
+        strcpy(userConfig.userName, "DEFAULT");
+    }else{
+        char line[33];
+        char* lineTrimed;
+        //read userid
+        fgets(line, 33, fp);
+        lineTrimed = xtrim(line);
+        strcpy(userConfig.userid, lineTrimed);
+        //read name
+        fgets(line, 33, fp);
+        lineTrimed = xtrim(line);
+        strcpy(userConfig.userName, lineTrimed);
+        //read phone
+        fgets(line, 33, fp);
+        lineTrimed = xtrim(line);
+        strcpy(userConfig.userPhone, lineTrimed);
+        //read score
+        fgets(line, 33, fp);
+        userConfig.userScore = atoi(line);
+        //read time
+        fgets(line, 33, fp);
+        userConfig.playTimeInSecond = atoi(line);
+        fclose(fp);
+    }
+}
+void saveUserConfig(){
+    FILE* fp = fopen(configFileName, "w");
+    if (fp == NULL){
+        printf("%s", "保存用户基本数据错误");
+        return;
+    }else{
+        //printf("%s\n%s\n%d\n%d", userConfig.userid, userConfig.userPhone, userConfig.userScore, userConfig.playTimeInSecond);
+
+        fprintf(fp, "%s\n%s\n%s\n%d\n%d", userConfig.userid, userConfig.userName, userConfig.userPhone, userConfig.userScore, userConfig.playTimeInSecond);
+        fclose(fp);
+    }
+}
+
+
+const char* getUserId(){ return userConfig.userid; }
+const char* getUserName(){ return userConfig.userName; }
+const char* getUserPhone(){ return userConfig.userPhone; }
+int getUserScore(){ return userConfig.userScore; }
+int getUserTime(){ return userConfig.playTimeInSecond; }
+void setUserName(const char* name){
+    strcpy(userConfig.userName, name);
+    saveUserConfig();
+}
+void setUserPhone(const char* phone){
+    strcpy(userConfig.userPhone, phone);
+    saveUserConfig();
+}
+void setUserScoreInternal(int score){
+    userConfig.userScore = score;
+    saveUserConfig();
+}
+void setUserTimeInternal(int time){
+    userConfig.playTimeInSecond = time;
+    saveUserConfig();
 }
