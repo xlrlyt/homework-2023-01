@@ -102,3 +102,40 @@ void printRawMap(char **map, int height, int width){
     }
     putchar('\n');
 }
+
+void printMixedMap(char **map, int height, int width, int currentBlockType, int currentBlockHeight, int currentBlockWidth, int currentBlockRotation){
+    MOVETO(0, 0);
+    //print the first line
+    int c = 0, cc;
+    for (c = 0; c < width + 2; c++){
+        printf(BLACK_CHAR);
+    }
+    putchar('\n');
+
+    const char (*block)[4] = NULL;
+    if (currentBlockType >= 0 && currentBlockType < BLOCK_NUM){
+        block = getBlocks(currentBlockType, currentBlockRotation);
+    }
+    
+
+    //print middle
+    bool cok;
+    for (c = 0; c < height; c++){
+        printf(BLACK_CHAR);
+        for(cc = 0; cc < width; cc++){
+            //putchar(map[c][cc] ? BLACK_CHAR : EMPTY_CHAR);
+            cok = (c >= currentBlockHeight && c < currentBlockHeight + 4 && cc >= currentBlockWidth && cc < currentBlockWidth + 4 && block != NULL) ?
+            map[c][cc] || block[c - currentBlockHeight][cc - currentBlockWidth] :
+            map[c][cc];
+
+            cok ? printf(BLACK_CHAR) : printf("  ");
+        }
+        printf(BLACK_CHAR);
+        putchar('\n');
+    }
+    //print lastline
+    for (c = 0; c < width + 2; c++){
+        printf(BLACK_CHAR);
+    }
+    putchar('\n');
+}

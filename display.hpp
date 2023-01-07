@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <termio.h>
+#include "blockdata.hpp"
 
 #define DISP_MIN_LINE 22
 #define DISP_MIN_WIDTH 25
@@ -26,3 +27,4 @@ bool checkWindow(bool debug = false);
 char scanKey();
 bool initAndCheckInterface(int height, int width);
 void printRawMap(char **map, int height, int width);
+void printMixedMap(char **map, int height, int width, int currentBlockType, int currentBlockHeight, int currentBlockWidth, int currentBlockRotation);
